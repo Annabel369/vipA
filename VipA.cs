@@ -13,9 +13,9 @@ namespace WithDatabaseDapper;
 public class WithDatabaseDapperPlugin : BasePlugin
 {
     public override string ModuleName => "Example: With Database (MySQL)";
-    public override string ModuleVersion => "1.0.0";
-    public override string ModuleAuthor => "CounterStrikeSharp & Contributors";
-    public override string ModuleDescription => "A plugin that reads and writes from the database.";
+    public override string ModuleVersion => "1.0.1";
+    public override string ModuleAuthor => "Amauri Bueno dos Santos";
+    public override string ModuleDescription => "A plugin that reads and writes from the database mysql.";
 
     private MySqlConnection _connection = null!;
 
@@ -43,6 +43,7 @@ public class WithDatabaseDapperPlugin : BasePlugin
     {
         // Replace with your actual MySQL connection string details
         // Including server address, username, password, and database name
+        
         return "server=localhost;uid=ogpuser;pwd=0073007;database=mariusbd";
     }
 
@@ -53,7 +54,7 @@ public class WithDatabaseDapperPlugin : BasePlugin
         if (@event.Attacker == @event.Userid) return HookResult.Continue;
 
         // Capture the steamid of the player as `@event` will not be available outside of this function.
-        var steamId = @event.Attacker.AuthorizedSteamID?.SteamId64;
+        var steamId = @event.Attacker?.AuthorizedSteamID?.SteamId64;
         var timestamp = DateTime.UtcNow; // Use UTC timestamp for consistent timekeeping
 
         if (steamId == null) return HookResult.Continue;
@@ -81,7 +82,7 @@ public class WithDatabaseDapperPlugin : BasePlugin
         if (player == null) return;
 
         // Capture the SteamID of the player as `@event` will not be available outside of this function.
-        var steamId = player.AuthorizedSteamID.SteamId64;
+        var steamId = player?.AuthorizedSteamID?.SteamId64;
 
         // Run in a separate thread to avoid blocking the main thread
         Task.Run(async () =>
@@ -94,7 +95,9 @@ public class WithDatabaseDapperPlugin : BasePlugin
 
             // Print the result to the player's chat. Note that this needs to be run on the game thread.
             // So we use `Server.NextFrame` to run it on the next game tick.
-            Server.NextFrame(() => { player.PrintToChat($"Kills: {result}"); });
+            Server.NextFrame(() => { player?.PrintToChat($"Kills: {result}"); });
+
+            
         });
     }
 }
